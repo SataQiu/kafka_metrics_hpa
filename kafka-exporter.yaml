@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-exporter
+  namespace: monitoring
+  labels:
+    app: kafka-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-exporter
+  template:
+    metadata:
+      labels:
+        app: kafka-exporter
+    spec:
+      containers:
+      - name: kafka-exporter
+        image: danielqsj/kafka-exporter:v1.6.0
+        imagePullPolicy: IfNotPresent
+        args: ["--kafka.server=kafka-headless.kafka:9092"]
+        ports:
+        - containerPort: 9308
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka-exporter
+  name: kafka-exporter
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 9308
+    protocol: TCP
+    targetPort: 9308
+  selector:
+    app: kafka-exporter

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-kafka-go-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      lang: golang
+      kafka: consumer
+  template:
+    metadata:
+      labels:
+        lang: golang
+        kafka: consumer
+    spec:
+      containers:
+      - name: consumer-kafka-go-client
+        image: shidaqiu/kafka-client:1.1
+        command:
+        - ./consumer
+        - kafka-headless.kafka:9092
+        - custom-topic
+        - golang-consumer
+        - "100"
+        # WaitMs
+        - "2000"
+        - plaintext
+        resources:
+          limits:
+            cpu: 50m
+            memory: 300Mi

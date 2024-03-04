@@ -1,0 +1,22 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: consumer-kafka-go-client-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: consumer-kafka-go-client
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: External
+    external:
+      metric: 
+        name: hpa_kafka_consumergroup_lag
+        selector:
+          matchLabels:
+            topic: custom-topic
+      target:
+        type: Value
+        value: "300"

@@ -1,0 +1,27 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: kafka-exporter
+  name: prometheus-kafka-exporter
+  namespace: monitoring
+spec:
+  endpoints:
+    - honorLabels: true
+      interval: 1m
+      path: /metrics
+      port: http
+      scheme: http
+      params:
+        target:
+          - 'kafka-headless.kafka:9092'
+      relabelings:
+        - sourceLabels: [__param_target]
+          targetLabel: instance
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector:
+    matchLabels:
+      app: kafka-exporter
